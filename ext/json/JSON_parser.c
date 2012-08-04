@@ -159,7 +159,7 @@ static const int state_transition_table[NR_STATES][NR_CLASSES] = {
 /*value  VA*/ {VA,VA,-6,__,-5,__,__,__,ST,__,__,__,MI,__,ZE,IN,__,__,__,__,__,F1,__,N1,__,__,T1,__,__,__,__},
 /*array  AR*/ {AR,AR,-6,__,-5,-7,__,__,ST,__,__,__,MI,__,ZE,IN,__,__,__,__,__,F1,__,N1,__,__,T1,__,__,__,__},
 /*string ST*/ {ST,__,ST,ST,ST,ST,ST,ST,-4,ES,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST},
-/*escape ES*/ {__,__,__,__,__,__,__,__,ST,ST,ST,__,__,__,__,__,__,ST,__,__,__,ST,__,ST,ST,__,ST,U1,__,__,__},
+/*escape ES*/ {ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,ST,U1,ST,ST,ST},
 /*u1     U1*/ {__,__,__,__,__,__,__,__,__,__,__,__,__,__,U2,U2,U2,U2,U2,U2,U2,U2,__,__,__,__,__,__,U2,U2,__},
 /*u2     U2*/ {__,__,__,__,__,__,__,__,__,__,__,__,__,__,U3,U3,U3,U3,U3,U3,U3,U3,__,__,__,__,__,__,U3,U3,__},
 /*u3     U3*/ {__,__,__,__,__,__,__,__,__,__,__,__,__,__,U4,U4,U4,U4,U4,U4,U4,U4,__,__,__,__,__,__,U4,U4,__},
@@ -493,8 +493,15 @@ parse_JSON_ex(JSON_parser jp, zval *z, unsigned short utf16_json[], int length, 
 	                        case 'r':
 	                            smart_str_appendc(&buf, '\r');
 	                            break;
+                            case 'u':
+                            case '"':
+                            case '\\':
+                            case '/':
+                                utf16_to_utf8(&buf, next_char);
+                                break;
 	                        default:
-	                            utf16_to_utf8(&buf, next_char);
+                                smart_str_appendc(&buf, '\\');
+	                            smart_str_appendc(&buf, next_char);
 	                            break;
 	                    }
 	                }
